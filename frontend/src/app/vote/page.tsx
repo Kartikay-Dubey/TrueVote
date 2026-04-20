@@ -91,7 +91,7 @@ export default function VotePage() {
       const token = localStorage.getItem("voter_token");
       if (!token) throw new Error("Authentication missing");
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}"}/api/v1/vote`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/v1/vote`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
