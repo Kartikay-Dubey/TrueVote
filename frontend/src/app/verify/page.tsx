@@ -17,7 +17,7 @@ export default function VerifyPage() {
     setMeta(null);
     
     try {
-      const res = await fetch(`http://localhost:5000/api/v1/verify/${hash}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/v1/verify/${hash}`);
       const data = await res.json();
       
       if (res.ok && data.verified) {

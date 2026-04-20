@@ -37,7 +37,7 @@ export default function AdminDashboard() {
       return;
     }
     
-    fetch("http://localhost:5000/api/v1/auth/admin-verify", {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || "${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}"}/api/v1/auth/admin-verify`, {
        headers: { "Authorization": `Bearer ${token}` }
     })
     .then(r => r.json())
@@ -48,7 +48,7 @@ export default function AdminDashboard() {
     .catch(() => router.push("/admin-login"));
 
     if (isAuth) {
-      fetch("http://localhost:5000/api/v1/results")
+      fetch(`${process.env.NEXT_PUBLIC_API_URL || "${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}"}/api/v1/results`)
         .then(r => r.json())
         .then(d => {
           setLiveVotes(d.total || 0);
@@ -59,7 +59,7 @@ export default function AdminDashboard() {
         .catch(console.error);
     }
 
-    const socket = io("http://localhost:5000");
+    const socket = io(`${process.env.NEXT_PUBLIC_API_URL || "${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}"}`);
 
     socket.on('new_vote_cast', (data: { hash: string, candidateId: string }) => {
       setLiveVotes(prev => {

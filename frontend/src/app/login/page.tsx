@@ -26,7 +26,7 @@ export default function VoterLoginPage() {
     setIsSubmitting(true);
     
     try {
-      const res = await fetch("http://localhost:5000/api/v1/auth/login/init", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}"}/api/v1/auth/login/init`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ voterId })
@@ -57,7 +57,7 @@ export default function VoterLoginPage() {
     setError(null);
 
     try {
-      const res = await fetch("http://localhost:5000/api/v1/auth/login/verify", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}"}/api/v1/auth/login/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ voterId, otp })
