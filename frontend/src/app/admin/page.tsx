@@ -106,9 +106,18 @@ export default function AdminDashboard() {
             <h1 className="text-4xl md:text-5xl font-black mb-2 tracking-tighter uppercase text-white">Live Election Dashboard</h1>
             <p className="text-gray-400 font-mono text-xs tracking-widest uppercase">Admin Portal connected and visually verifying network nodes.</p>
           </div>
-          <div className="flex items-center gap-3 px-5 py-2.5 bg-green-500/10 text-green-400 border border-green-500/50 text-xs font-mono shadow-[0_0_15px_rgba(74,222,128,0.2)]" style={{ clipPath: 'polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)'}}>
-            <div className="w-2.5 h-2.5 bg-green-400 animate-pulse drop-shadow-[0_0_5px_rgba(74,222,128,1)]"></div>
-            LIVE SSL CONNECTION
+          <div className="flex flex-col items-end gap-3">
+            <button 
+               onClick={() => router.push('/assisted-vote')}
+               className="bg-purple-500/10 text-purple-400 border border-purple-500/50 hover:bg-purple-500/20 px-6 py-2.5 font-bold uppercase tracking-widest text-xs transition-colors shadow-[0_0_15px_rgba(168,85,247,0.2)]" 
+               style={{ clipPath: 'polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)'}}
+            >
+               + Rural Access Terminal
+            </button>
+            <div className="flex items-center gap-3 px-5 py-1.5 bg-green-500/10 text-green-400 border border-green-500/50 text-[10px] font-mono shadow-[0_0_15px_rgba(74,222,128,0.2)]" style={{ clipPath: 'polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px)'}}>
+              <div className="w-2 h-2 bg-green-400 animate-pulse drop-shadow-[0_0_5px_rgba(74,222,128,1)]"></div>
+              LIVE SSL SECURED
+            </div>
           </div>
         </div>
 

@@ -34,7 +34,7 @@ router.post('/vote', authenticateToken, (req, res) => {
 
   // Strict Double Voting Check enforced at Identity Level
   if (global.votedUsers.has(voterId)) {
-    return res.status(403).json({ error: 'VIOLATION DETECTED: This identity has already cast a ballot. Connection terminated.' });
+    return res.status(403).json({ error: 'VIOLATION DETECTED: Demographic Identity has already been utilized to cast a vote. Further attempts are mathematically blocked.' });
   }
 
   const rawData = `${voterId}-${candidateId}-${timestamp || Date.now()}-${Math.random()}`;

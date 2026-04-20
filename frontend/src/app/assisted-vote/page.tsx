@@ -1,41 +1,51 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ShieldCheck, User, ShieldAlert, Fingerprint, Lock } from "lucide-react";
+import { ShieldCheck, UserCheck, ShieldAlert, Key } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import { AsymmetricCard } from "@/components/interactive/AsymmetricCard";
 import { CyberButton } from "@/components/interactive/CyberButton";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function VoterLoginPage() {
+export default function AssistedVotingPage() {
   const [step, setStep] = useState<1 | 2>(1);
   const [voterId, setVoterId] = useState("");
   const [otp, setOtp] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [adminToken, setAdminToken] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleSendOTP = (e: React.FormEvent) => {
+  useEffect(() => {
+    const token = localStorage.getItem("admin_token");
+    if (!token) {
+      router.push("/admin-login");
+    } else {
+      setAdminToken(token);
+    }
+  }, [router]);
+
+  const handleManualOverride = (e: React.FormEvent) => {
     e.preventDefault();
     if (voterId.length < 10) {
-      setError("Demographic ID must be a mathematically valid 12-digit code.");
+      setError("Verify Demographic ID is structurally valid.");
       return;
     }
     setError(null);
     setIsSubmitting(true);
     
-    // Simulate API delay for OTP generation
+    // Simulate API delay for rural connectivity
     setTimeout(() => {
       setIsSubmitting(false);
       setStep(2);
     }, 1200);
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleAssistedLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (otp.length !== 6) {
-      setError("Secure Override Key must be precisely 6 digits.");
+      setError("Enter 6-digit administrative override key.");
       return;
     }
 
@@ -43,9 +53,12 @@ export default function VoterLoginPage() {
     setError(null);
 
     try {
-      const res = await fetch("http://localhost:5000/api/v1/auth/login", {
+      const res = await fetch("http://localhost:5000/api/v1/auth/assisted-login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${adminToken}`
+        },
         body: JSON.stringify({ voterId, otp })
       });
       
@@ -56,32 +69,35 @@ export default function VoterLoginPage() {
          localStorage.setItem("voter_id", data.userId);
          
          if (data.hasVoted) {
-           setError("VIOLATION DETECTED: This demographic identity has already cast a vote. Duplicate entries are blocked at the cryptographic layer.");
+           setError("VIOLATION DETECTED: This user has already voted in the system. Blocked natively.");
            setIsSubmitting(false);
          } else {
            router.push("/vote");
          }
       } else {
-         setError(data.error || "Identity Verification Failed.");
+         setError(data.error || "Administrative override failed.");
          setIsSubmitting(false);
       }
     } catch (e) {
-      setError("Network error. Handshake with secure server failed.");
+      setError("Network error. Rural node offline.");
       setIsSubmitting(false);
     }
   };
 
+  if (!adminToken) return null;
+
   return (
     <PageTransition>
-      <div className="flex flex-col items-center justify-center min-h-[75vh] px-4">
+      <div className="flex flex-col items-center justify-center min-h-[75vh] px-4 font-mono">
         <motion.div initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="mb-8">
-           <div className="w-20 h-20 bg-blue-500/10 border border-blue-400/50 flex items-center justify-center glow-cyan mb-4 mx-auto" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)'}}>
-              <Fingerprint size={32} className="text-cyan-400 drop-shadow-[0_0_10px_rgba(6,182,212,1)]" />
+           <div className="w-20 h-20 bg-purple-500/10 border border-purple-400/50 flex items-center justify-center mb-4 mx-auto shadow-[0_0_20px_rgba(168,85,247,0.3)]" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)'}}>
+              <ShieldCheck size={32} className="text-purple-400 drop-shadow-[0_0_10px_rgba(168,85,247,1)]" />
            </div>
-           <h1 className="text-3xl font-black text-center uppercase tracking-widest">Identify Yourself</h1>
+           <h1 className="text-3xl font-black text-center uppercase tracking-widest text-purple-400">Rural Access Kiosk</h1>
+           <p className="text-gray-400 uppercase text-xs text-center tracking-[0.2em] mt-2">Admin Overridden Subroutine</p>
         </motion.div>
 
-        <AsymmetricCard className="w-full max-w-md">
+        <AsymmetricCard className="w-full max-w-md !border-purple-500/30">
            <AnimatePresence mode="wait">
              {step === 1 ? (
                <motion.form 
@@ -89,7 +105,7 @@ export default function VoterLoginPage() {
                  initial={{ opacity: 0, x: -20 }} 
                  animate={{ opacity: 1, x: 0 }} 
                  exit={{ opacity: 0, x: 20 }}
-                 onSubmit={handleSendOTP} 
+                 onSubmit={handleManualOverride} 
                  className="flex flex-col gap-6"
                >
                  {error && (
@@ -100,8 +116,8 @@ export default function VoterLoginPage() {
                  )}
 
                  <div className="flex flex-col gap-2 relative">
-                    <label className="text-xs uppercase tracking-widest text-cyan-400 font-bold mb-1">Enter Verified ID (Aadhaar / Voter ID)</label>
-                    <div className="absolute left-4 top-[38px] text-gray-500"><User size={20} /></div>
+                    <label className="text-xs uppercase tracking-widest text-purple-400 font-bold mb-1">Citizen Unique ID</label>
+                    <div className="absolute left-4 top-[38px] text-gray-500"><UserCheck size={20} /></div>
                     <input 
                       type="text" 
                       value={voterId}
@@ -110,14 +126,14 @@ export default function VoterLoginPage() {
                          setError(null);
                       }}
                       autoFocus
-                      placeholder="e.g. 8412 1102 9901"
-                      className="w-full h-14 bg-black/80 border-b border-white/20 pl-12 pr-4 text-white focus:outline-none focus:border-cyan-400 transition-colors font-mono placeholder:text-gray-700 tracking-widest"
+                      placeholder="Enter 12-digit ID physically verified"
+                      className="w-full h-14 bg-black/80 border-b border-white/20 pl-12 pr-4 text-white focus:outline-none focus:border-purple-400 transition-colors font-mono placeholder:text-gray-700 tracking-widest text-sm"
                     />
                  </div>
 
                  <div className="pt-4 max-w-[200px] mx-auto w-full">
-                   <CyberButton isLoading={isSubmitting} type="submit" disabled={!voterId} className="w-full">
-                     Verify ID <Lock className="inline ml-2" size={16} />
+                   <CyberButton isLoading={isSubmitting} type="submit" disabled={!voterId} className="w-full !bg-purple-500/20 !border-purple-500/50 !text-purple-300">
+                     Authorize
                    </CyberButton>
                  </div>
                </motion.form>
@@ -127,7 +143,7 @@ export default function VoterLoginPage() {
                  initial={{ opacity: 0, x: -20 }} 
                  animate={{ opacity: 1, x: 0 }} 
                  exit={{ opacity: 0, x: 20 }}
-                 onSubmit={handleLogin} 
+                 onSubmit={handleAssistedLogin} 
                  className="flex flex-col gap-6"
                >
                  {error && (
@@ -138,8 +154,8 @@ export default function VoterLoginPage() {
                  )}
 
                  <div className="flex flex-col gap-2 relative">
-                    <label className="text-xs uppercase tracking-widest text-cyan-400 font-bold mb-1">Enter 6-Digit SMS Code</label>
-                    <div className="absolute left-4 top-[38px] text-gray-500"><Lock size={20} /></div>
+                    <label className="text-xs uppercase tracking-widest text-purple-400 font-bold mb-1">Admin Security Override Key</label>
+                    <div className="absolute left-4 top-[38px] text-gray-500"><Key size={20} /></div>
                     <input 
                       type="text" 
                       value={otp}
@@ -150,13 +166,14 @@ export default function VoterLoginPage() {
                       autoFocus
                       placeholder="123456"
                       maxLength={6}
-                      className="w-full h-14 bg-black/80 border-b border-white/20 pl-12 pr-4 text-white focus:outline-none focus:border-cyan-400 transition-colors font-mono placeholder:text-gray-700 tracking-[0.5em] text-center"
+                      className="w-full h-14 bg-black/80 border-b border-white/20 pl-12 pr-4 text-white focus:outline-none focus:border-purple-400 transition-colors font-mono placeholder:text-gray-700 tracking-[0.5em] text-center"
                     />
                  </div>
 
-                 <div className="pt-4 max-w-[200px] mx-auto w-full">
-                   <CyberButton isLoading={isSubmitting} type="submit" disabled={otp.length !== 6} className="w-full">
-                     Proceed to Vote
+                 <div className="flex justify-between gap-4 pt-4 w-full">
+                   <button type="button" onClick={() => setStep(1)} className="px-6 py-2 border border-white/10 text-gray-400 text-xs uppercase tracking-widest hover:bg-white/5 transition-colors">Back</button>
+                   <CyberButton isLoading={isSubmitting} type="submit" disabled={otp.length !== 6} className="flex-1 !bg-purple-500/20 !border-purple-500/50 !text-purple-300">
+                     Launch Session
                    </CyberButton>
                  </div>
                </motion.form>
@@ -164,9 +181,9 @@ export default function VoterLoginPage() {
            </AnimatePresence>
            
            <div className="mt-8 pt-6 border-t border-white/5 text-center flex flex-col items-center justify-center gap-2">
-              <ShieldCheck className="text-gray-500" size={24} />
+              <ShieldAlert className="text-gray-500" size={24} />
               <p className="text-[10px] text-gray-500 uppercase font-mono tracking-widest max-w-[250px]">
-                 TrueVote uses mathematical identity verification to mandate a strict One-Person-One-Vote policy.
+                 Strict Liability: Votes cast through the rural kiosk are irreversibly cryptographic. Verify physical demographics.
               </p>
            </div>
         </AsymmetricCard>

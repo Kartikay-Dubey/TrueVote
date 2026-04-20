@@ -14,12 +14,13 @@ The TrueVote frontend is a Next.js 16 (App Router) application delivering a prem
 | Route | Purpose |
 |---|---|
 | `/` | Landing page — hero section, how-it-works, feature highlights |
-| `/login` | Voter authentication via JWT |
+| `/login` | Voter authentication via Aadhaar emulation & OTP verification |
 | `/vote` | Candidate selection with 3D-tilt cards and confirmation modal |
 | `/success` | Post-vote receipt page — Hash Terminal decryption animation |
 | `/verify` | Public ledger — paste a hash receipt to prove your vote |
 | `/admin-login` | Restricted admin authentication |
-| `/admin` | Live election dashboard with Recharts (Donut + Area charts) |
+| `/admin` | Live election dashboard with anomaly detection |
+| `/assisted-vote` | Rural Access Terminal for administratively overriding unequipped voter logins |
 
 ## 🔌 Real-Time Integration
 The frontend connects to the backend via **Socket.io** (WebSockets) on the Admin Dashboard page. Every time a new vote is cast, the server emits a `new_vote_cast` event that instantly updates:

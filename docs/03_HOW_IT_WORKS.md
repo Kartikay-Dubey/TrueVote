@@ -2,8 +2,9 @@
 
 Our system requires exactly ZERO technical knowledge from the end-user. 
 
-### Phase 1: Identity Generation (Login)
-Citizens navigate to `/login` and enter their officially registered email. The TrueVote authentication server checks the registry and securely signs a JSON Web Token granting them one-time access to the Voting Portal.
+### Phase 1: Cryptographic Authentication
+Citizens navigate to `/login` to authorize their demographic identity (e.g. 12-digit Aadhaar simulation). 
+To prevent offline spoofing, the system triggers a **6-Digit OTP Protocol**. Upon verifying both the unique ID and the OTP pin against the network constraints, the backend issues an expiring JWT session. If the identity has *already* recorded a transaction, the server instantly terminates the session with a `403 Forbidden` response.
 
 ### Phase 2: Casting the Ballot (Vote)
 Inside the secure portal (`/vote`), they evaluate the candidates. They make their selection privately. Once they click 'Cast My Secure Vote', the system securely beams their JWT and their selection to the TrueVote Engine.
