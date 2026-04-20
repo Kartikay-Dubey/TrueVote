@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CyberButton } from "@/components/interactive/CyberButton";
 import { AsymmetricCard } from "@/components/interactive/AsymmetricCard";
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://truevote-backend-fcmt.onrender.com";
+
 export default function VerifyPage() {
   const [hash, setHash] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "valid" | "invalid">("idle");
@@ -17,7 +19,7 @@ export default function VerifyPage() {
     setMeta(null);
     
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/v1/verify/${hash}`);
+      const res = await fetch(`${BASE_URL}/api/v1/verify/${hash}`);
       const data = await res.json();
       
       if (res.ok && data.verified) {

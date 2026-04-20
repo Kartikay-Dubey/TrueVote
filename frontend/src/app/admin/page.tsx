@@ -6,6 +6,8 @@ import { Activity, ShieldAlert, CheckCircle2, Globe2 } from "lucide-react";
 import { io } from "socket.io-client";
 import { useRouter } from "next/navigation";
 import { AsymmetricCard } from "@/components/interactive/AsymmetricCard";
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://truevote-backend-fcmt.onrender.com";
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip,
   AreaChart, Area, XAxis, YAxis, CartesianGrid
@@ -37,7 +39,7 @@ export default function AdminDashboard() {
       return;
     }
     
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/v1/auth/admin-verify`, {
+    fetch(`${BASE_URL}/api/v1/auth/admin-verify`, {
        headers: { "Authorization": `Bearer ${token}` }
     })
     .then(r => r.json())
@@ -48,7 +50,7 @@ export default function AdminDashboard() {
     .catch(() => router.push("/admin-login"));
 
     if (isAuth) {
-      fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/v1/results`)
+      fetch(`${BASE_URL}/api/v1/results`)
         .then(r => r.json())
         .then(d => {
           setLiveVotes(d.total || 0);
@@ -59,7 +61,7 @@ export default function AdminDashboard() {
         .catch(console.error);
     }
 
-    const socket = io(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}`);
+    const socket = io(`${BASE_URL}`);
 
     socket.on('new_vote_cast', (data: { hash: string, candidateId: string }) => {
       setLiveVotes(prev => {

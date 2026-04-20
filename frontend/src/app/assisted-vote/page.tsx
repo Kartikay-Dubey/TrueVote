@@ -8,6 +8,8 @@ import { AsymmetricCard } from "@/components/interactive/AsymmetricCard";
 import { CyberButton } from "@/components/interactive/CyberButton";
 import { motion } from "framer-motion";
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://truevote-backend-fcmt.onrender.com";
+
 export default function AssistedVotingPage() {
   const [voterId, setVoterId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,7 +36,7 @@ export default function AssistedVotingPage() {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/v1/auth/assisted-login`, {
+      const res = await fetch(`${BASE_URL}/api/v1/auth/assisted-login`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

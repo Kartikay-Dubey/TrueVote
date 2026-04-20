@@ -8,6 +8,8 @@ import { AsymmetricCard } from "@/components/interactive/AsymmetricCard";
 import { CyberButton } from "@/components/interactive/CyberButton";
 import { motion } from "framer-motion";
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://truevote-backend-fcmt.onrender.com";
+
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("admin@truevote.com");
   const [password, setPassword] = useState("secure123");
@@ -21,7 +23,7 @@ export default function AdminLoginPage() {
     setError(null);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/v1/auth/admin-login`, {
+      const res = await fetch(`${BASE_URL}/api/v1/auth/admin-login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })

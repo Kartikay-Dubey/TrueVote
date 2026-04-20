@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { AsymmetricCard } from "@/components/interactive/AsymmetricCard";
 import { CyberButton } from "@/components/interactive/CyberButton";
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://truevote-backend-fcmt.onrender.com";
+
 const INDI_CANDIDATES = [
   { 
     id: "Narendra_Modi", 
@@ -91,7 +93,7 @@ export default function VotePage() {
       const token = localStorage.getItem("voter_token");
       if (!token) throw new Error("Authentication missing");
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/v1/vote`, {
+      const res = await fetch(`${BASE_URL}/api/v1/vote`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
