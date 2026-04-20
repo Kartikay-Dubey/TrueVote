@@ -32,8 +32,15 @@ router.post('/vote', authenticateToken, (req, res) => {
     return res.status(400).json({ error: 'Payload rejected: Missing candidate vector.' });
   }
 
+  // Link to Demographic Registry
+  const userRecord = global.fakeUsers ? global.fakeUsers[voterId] : null;
+
+  if (!userRecord) {
+    return res.status(404).json({ error: 'Fatal: Identity record unlinked during transaction.' });
+  }
+
   // Strict Double Voting Check enforced at Identity Level
-  if (global.votedUsers.has(voterId)) {
+  if (userRecord.hasVoted) {
     return res.status(403).json({ error: 'VIOLATION DETECTED: Demographic Identity has already been utilized to cast a vote. Further attempts are mathematically blocked.' });
   }
 
@@ -42,7 +49,10 @@ router.post('/vote', authenticateToken, (req, res) => {
 
   // Store in immutable ledger
   global.voteLedger[hash] = { candidateId, voterId, timestamp: Date.now(), verified: true };
-  global.votedUsers.add(voterId);
+  
+  // Mutate National Registry
+  userRecord.hasVoted = true;
+  userRecord.voteHash = hash;
 
   if (req.app.get('io')) {
     req.app.get('io').emit('new_vote_cast', { hash, candidateId });

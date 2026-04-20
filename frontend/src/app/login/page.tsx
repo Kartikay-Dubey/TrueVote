@@ -16,20 +16,34 @@ export default function VoterLoginPage() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleSendOTP = (e: React.FormEvent) => {
+  const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (voterId.length < 10) {
-      setError("Demographic ID must be a mathematically valid 12-digit code.");
+    if (!voterId) {
+      setError("Demographic ID is required.");
       return;
     }
     setError(null);
     setIsSubmitting(true);
     
-    // Simulate API delay for OTP generation
-    setTimeout(() => {
+    try {
+      const res = await fetch("http://localhost:5000/api/v1/auth/login/init", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ voterId })
+      });
+      const data = await res.json();
+      
+      if (res.ok) {
+        setIsSubmitting(false);
+        setStep(2);
+      } else {
+        setError(data.error || "Identity Verification Failed.");
+        setIsSubmitting(false);
+      }
+    } catch (e) {
+      setError("Network error. Could not connect to system.");
       setIsSubmitting(false);
-      setStep(2);
-    }, 1200);
+    }
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -43,7 +57,7 @@ export default function VoterLoginPage() {
     setError(null);
 
     try {
-      const res = await fetch("http://localhost:5000/api/v1/auth/login", {
+      const res = await fetch("http://localhost:5000/api/v1/auth/login/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ voterId, otp })
@@ -110,8 +124,8 @@ export default function VoterLoginPage() {
                          setError(null);
                       }}
                       autoFocus
-                      placeholder="e.g. 8412 1102 9901"
-                      className="w-full h-14 bg-black/80 border-b border-white/20 pl-12 pr-4 text-white focus:outline-none focus:border-cyan-400 transition-colors font-mono placeholder:text-gray-700 tracking-widest"
+                      placeholder="e.g. TV1001"
+                      className="w-full h-14 bg-black/80 border-b border-white/20 pl-12 pr-4 text-white focus:outline-none focus:border-cyan-400 transition-colors font-mono placeholder:text-gray-700 tracking-widest uppercase"
                     />
                  </div>
 

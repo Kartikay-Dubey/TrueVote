@@ -2,16 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ShieldCheck, UserCheck, ShieldAlert, Key } from "lucide-react";
+import { ShieldCheck, UserCheck, ShieldAlert } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import { AsymmetricCard } from "@/components/interactive/AsymmetricCard";
 import { CyberButton } from "@/components/interactive/CyberButton";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 export default function AssistedVotingPage() {
-  const [step, setStep] = useState<1 | 2>(1);
   const [voterId, setVoterId] = useState("");
-  const [otp, setOtp] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [adminToken, setAdminToken] = useState<string | null>(null);
@@ -26,31 +24,14 @@ export default function AssistedVotingPage() {
     }
   }, [router]);
 
-  const handleManualOverride = (e: React.FormEvent) => {
+  const handleAssistedLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (voterId.length < 10) {
+    if (!voterId) {
       setError("Verify Demographic ID is structurally valid.");
       return;
     }
     setError(null);
     setIsSubmitting(true);
-    
-    // Simulate API delay for rural connectivity
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setStep(2);
-    }, 1200);
-  };
-
-  const handleAssistedLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (otp.length !== 6) {
-      setError("Enter 6-digit administrative override key.");
-      return;
-    }
-
-    setIsSubmitting(true);
-    setError(null);
 
     try {
       const res = await fetch("http://localhost:5000/api/v1/auth/assisted-login", {
@@ -59,7 +40,7 @@ export default function AssistedVotingPage() {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${adminToken}`
         },
-        body: JSON.stringify({ voterId, otp })
+        body: JSON.stringify({ voterId })
       });
       
       const data = await res.json();
@@ -98,87 +79,41 @@ export default function AssistedVotingPage() {
         </motion.div>
 
         <AsymmetricCard className="w-full max-w-md !border-purple-500/30">
-           <AnimatePresence mode="wait">
-             {step === 1 ? (
-               <motion.form 
-                 key="step1"
-                 initial={{ opacity: 0, x: -20 }} 
-                 animate={{ opacity: 1, x: 0 }} 
-                 exit={{ opacity: 0, x: 20 }}
-                 onSubmit={handleManualOverride} 
-                 className="flex flex-col gap-6"
-               >
-                 {error && (
-                    <div className="p-3 bg-red-500/10 border-l-2 border-red-500 text-red-400 text-xs font-mono uppercase flex items-start gap-2">
-                       <ShieldAlert size={16} className="shrink-0 mt-0.5" />
-                       {error}
-                    </div>
-                 )}
-
-                 <div className="flex flex-col gap-2 relative">
-                    <label className="text-xs uppercase tracking-widest text-purple-400 font-bold mb-1">Citizen Unique ID</label>
-                    <div className="absolute left-4 top-[38px] text-gray-500"><UserCheck size={20} /></div>
-                    <input 
-                      type="text" 
-                      value={voterId}
-                      onChange={(e) => {
-                         setVoterId(e.target.value);
-                         setError(null);
-                      }}
-                      autoFocus
-                      placeholder="Enter 12-digit ID physically verified"
-                      className="w-full h-14 bg-black/80 border-b border-white/20 pl-12 pr-4 text-white focus:outline-none focus:border-purple-400 transition-colors font-mono placeholder:text-gray-700 tracking-widest text-sm"
-                    />
-                 </div>
-
-                 <div className="pt-4 max-w-[200px] mx-auto w-full">
-                   <CyberButton isLoading={isSubmitting} type="submit" disabled={!voterId} className="w-full !bg-purple-500/20 !border-purple-500/50 !text-purple-300">
-                     Authorize
-                   </CyberButton>
-                 </div>
-               </motion.form>
-             ) : (
-               <motion.form 
-                 key="step2"
-                 initial={{ opacity: 0, x: -20 }} 
-                 animate={{ opacity: 1, x: 0 }} 
-                 exit={{ opacity: 0, x: 20 }}
-                 onSubmit={handleAssistedLogin} 
-                 className="flex flex-col gap-6"
-               >
-                 {error && (
-                    <div className="p-3 bg-red-500/10 border-l-2 border-red-500 text-red-400 text-xs font-mono uppercase flex items-start gap-2">
-                       <ShieldAlert size={16} className="shrink-0 mt-0.5" />
-                       {error}
-                    </div>
-                 )}
-
-                 <div className="flex flex-col gap-2 relative">
-                    <label className="text-xs uppercase tracking-widest text-purple-400 font-bold mb-1">Admin Security Override Key</label>
-                    <div className="absolute left-4 top-[38px] text-gray-500"><Key size={20} /></div>
-                    <input 
-                      type="text" 
-                      value={otp}
-                      onChange={(e) => {
-                         setOtp(e.target.value);
-                         setError(null);
-                      }}
-                      autoFocus
-                      placeholder="123456"
-                      maxLength={6}
-                      className="w-full h-14 bg-black/80 border-b border-white/20 pl-12 pr-4 text-white focus:outline-none focus:border-purple-400 transition-colors font-mono placeholder:text-gray-700 tracking-[0.5em] text-center"
-                    />
-                 </div>
-
-                 <div className="flex justify-between gap-4 pt-4 w-full">
-                   <button type="button" onClick={() => setStep(1)} className="px-6 py-2 border border-white/10 text-gray-400 text-xs uppercase tracking-widest hover:bg-white/5 transition-colors">Back</button>
-                   <CyberButton isLoading={isSubmitting} type="submit" disabled={otp.length !== 6} className="flex-1 !bg-purple-500/20 !border-purple-500/50 !text-purple-300">
-                     Launch Session
-                   </CyberButton>
-                 </div>
-               </motion.form>
+           <motion.form 
+             initial={{ opacity: 0, x: -20 }} 
+             animate={{ opacity: 1, x: 0 }} 
+             onSubmit={handleAssistedLogin} 
+             className="flex flex-col gap-6"
+           >
+             {error && (
+                <div className="p-3 bg-red-500/10 border-l-2 border-red-500 text-red-400 text-xs font-mono uppercase flex items-start gap-2">
+                   <ShieldAlert size={16} className="shrink-0 mt-0.5" />
+                   {error}
+                </div>
              )}
-           </AnimatePresence>
+
+             <div className="flex flex-col gap-2 relative">
+                <label className="text-xs uppercase tracking-widest text-purple-400 font-bold mb-1">Citizen Unique ID</label>
+                <div className="absolute left-4 top-[38px] text-gray-500"><UserCheck size={20} /></div>
+                <input 
+                  type="text" 
+                  value={voterId}
+                  onChange={(e) => {
+                     setVoterId(e.target.value);
+                     setError(null);
+                  }}
+                  autoFocus
+                  placeholder="e.g. TV1001"
+                  className="w-full h-14 bg-black/80 border-b border-white/20 pl-12 pr-4 text-white focus:outline-none focus:border-purple-400 transition-colors font-mono placeholder:text-gray-700 tracking-widest text-sm uppercase"
+                />
+             </div>
+
+             <div className="pt-4 mx-auto w-full">
+               <CyberButton isLoading={isSubmitting} type="submit" disabled={!voterId} className="w-full !bg-purple-500/20 !border-purple-500/50 !text-purple-300">
+                 Verify & Launch Session
+               </CyberButton>
+             </div>
+           </motion.form>
            
            <div className="mt-8 pt-6 border-t border-white/5 text-center flex flex-col items-center justify-center gap-2">
               <ShieldAlert className="text-gray-500" size={24} />

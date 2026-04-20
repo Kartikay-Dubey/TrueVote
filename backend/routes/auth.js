@@ -1,60 +1,89 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const { fakeUsers } = require('../data/users');
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_hackathon_key_2026';
 
-// Initialize global tracking
-global.votedUsers = global.votedUsers || new Set();
+// Attach fakeUsers to global so it can be mutated by secure.js
+if (!global.fakeUsers) {
+  global.fakeUsers = fakeUsers;
+}
 
-// Voter Identity & Verification Pipeline
-router.post('/login', (req, res) => {
-  const { voterId, otp } = req.body;
+// Temporary memory for OTP mappings { "TV1001": "123456" }
+global.otpCache = global.otpCache || {};
+
+// Step 1: Voter Identity Validation & OTP Generation
+router.post('/login/init', (req, res) => {
+  const { voterId } = req.body;
   
-  // 1. Validate ID Format (e.g. 12 digit format)
-  if (!voterId || voterId.length < 10) {
-    return res.status(400).json({ error: 'Valid Demographic ID (Aadhaar/VoterID) is mathematically required.' });
+  if (!voterId) {
+    return res.status(400).json({ error: 'Voter ID is required.' });
   }
 
-  // 2. Validate Simulated OTP (accepts any 6 digit for demo)
-  if (!otp || otp.length !== 6) {
-    return res.status(401).json({ error: 'Cryptographic OTP sequence invalid or missing. Ensure you entered a 6-digit pin.' });
+  // Check against fake dataset
+  const userRecord = global.fakeUsers[voterId];
+  if (!userRecord) {
+    return res.status(404).json({ error: 'Invalid ID: Demographic record not found in national registry.' });
   }
+
+  // Generate 6-digit simulated OTP
+  const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+  global.otpCache[voterId] = generatedOtp;
+
+  // Log in terminal for the hackathon demo exactly as requested
+  console.log(`\n[SMS GATEWAY SIMULATION]`);
+  console.log(`📡 Sending OTP to ${userRecord.name} ending in ...${userRecord.phone.slice(-4)}`);
+  console.log(`🔑 SECURE OTP: ${generatedOtp}\n`);
+
+  setTimeout(() => { // Artificial network delay
+    res.status(200).json({ success: true, message: 'OTP sent to registered mobile.' });
+  }, 800);
+});
+
+// Step 2: OTP Verification & JWT Issuance
+router.post('/login/verify', (req, res) => {
+  const { voterId, otp } = req.body;
+
+  if (!voterId || !otp) {
+    return res.status(400).json({ error: 'Voter ID and OTP are required.' });
+  }
+
+  const cachedOtp = global.otpCache[voterId];
+  
+  if (!cachedOtp || cachedOtp !== otp) {
+    return res.status(401).json({ error: 'Invalid OTP or session expired.' });
+  }
+
+  // Clear OTP
+  delete global.otpCache[voterId];
 
   const userId = voterId;
-  const token = jwt.sign({ userId, role: 'voter' }, JWT_SECRET, { expiresIn: '24h' });
+  const userRecord = global.fakeUsers[userId];
+  
+  const token = jwt.sign({ userId, role: 'voter', name: userRecord.name }, JWT_SECRET, { expiresIn: '24h' });
+  const hasVoted = userRecord.hasVoted;
 
-  const hasVoted = global.votedUsers.has(userId);
-
-  // Return token and payload
-  setTimeout(() => { // Artificial security feeling delay
-    res.status(200).json({ token, userId, hasVoted });
-  }, 800);
+  setTimeout(() => { 
+    res.status(200).json({ token, userId, hasVoted, name: userRecord.name });
+  }, 600);
 });
 
 // Administrator Gate
 router.post('/admin-login', (req, res) => {
   const { email, password } = req.body;
-  
   if (email === 'admin@truevote.com' && password === 'secure123') {
     const token = jwt.sign({ role: 'admin' }, JWT_SECRET, { expiresIn: '12h' });
-    
-    return setTimeout(() => {
-       res.status(200).json({ token, success: true });
-    }, 1000);
+    return setTimeout(() => res.status(200).json({ token, success: true }), 1000);
   }
-
-  return setTimeout(() => {
-    res.status(401).json({ error: 'Fatal: Invalid Administrator Credentials. Activity Logged.' });
-  }, 1200);
+  return setTimeout(() => res.status(401).json({ error: 'Invalid Credentials.' }), 1200);
 });
 
-// Admin verify token GET helper
+// Admin verify token helper
 router.get('/admin-verify', (req, res) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   if (!token) return res.status(401).json({ valid: false });
-
   jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err || user.role !== 'admin') return res.status(403).json({ valid: false });
     res.status(200).json({ valid: true });
@@ -62,33 +91,32 @@ router.get('/admin-verify', (req, res) => {
 });
 
 // Assisted Voting Kiosk Login
+// Note: Bypasses the temporal SMS OTP because physical identity was established by Admin.
 router.post('/assisted-login', (req, res) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'Admin terminal authorization required.' });
 
   jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err || user.role !== 'admin') return res.status(403).json({ error: 'Forbidden: Valid Admin clearance required for Rural Mode.' });
+    if (err || user.role !== 'admin') return res.status(403).json({ error: 'Forbidden.' });
     
-    // Proceed with voter login
-    const { voterId, otp } = req.body;
+    const { voterId } = req.body;
     
-    if (!voterId || voterId.length < 10) {
-      return res.status(400).json({ error: 'Valid Demographic ID (Aadhaar/VoterID) is mathematically required.' });
+    if (!voterId) {
+      return res.status(400).json({ error: 'Voter ID is required.' });
     }
-  
-    // Logically skip or validate OTP exactly how regular login does, here we simulate the Admin manually verified it
-    if (!otp || otp.length !== 6) {
-      return res.status(401).json({ error: 'Assisted Authorization Failed: Enter 6 digit override code.' });
+
+    const userRecord = global.fakeUsers[voterId];
+    if (!userRecord) {
+      return res.status(404).json({ error: 'Invalid ID: Record not found.' });
     }
   
     const userId = voterId;
-    const voterToken = jwt.sign({ userId, role: 'voter', assistedBy: user.userId || 'admin' }, JWT_SECRET, { expiresIn: '1h' });
+    const voterToken = jwt.sign({ userId, role: 'voter', assistedBy: user.userId || 'admin', name: userRecord.name }, JWT_SECRET, { expiresIn: '1h' });
+    const hasVoted = userRecord.hasVoted;
   
-    const hasVoted = global.votedUsers.has(userId);
-  
-    setTimeout(() => { // Artificial security feeling delay
-      res.status(200).json({ token: voterToken, userId, hasVoted });
+    setTimeout(() => { 
+      res.status(200).json({ token: voterToken, userId, hasVoted, name: userRecord.name });
     }, 800);
   });
 });

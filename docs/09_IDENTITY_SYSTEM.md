@@ -3,12 +3,12 @@
 To enforce a strict "One Person = One Vote" mandate, TrueVote simulates a mathematically secure demographic identity verification pipeline.
 
 ## 🏦 Aadhaar / Voter ID Validation
-Instead of basic email or username registration, the system strictly expects a 12-digit structural identity vector. During login:
-1. The user inputs their unique identifier.
-2. The UI validates the length constraints.
-3. The backend maps this demographic ID into the session matrix.
+Instead of basic email or username registration, the system strictly expects a format simulating a structural identity vector. During login:
+1. The user inputs their unique identifier (e.g. `TV1001`).
+2. The backend maps this demographic ID into a mock relational dataset (`backend/data/users.js`).
+3. If the ID is not mathematically present within the national registry, it firmly throws an `Invalid ID` rejection preventing any API handshakes.
 
-*Note: For the bounds of the presentation, the system accepts any structurally valid 12-digit integer payload to represent simulated offline Demographic APIs (Aadhaar proxy).*
+*Note: For the bounds of the presentation, the system utilizes an ethical 20-profile fake dataset composed of synthetic Indian citizens with `TV1001` extending sequentially towards `TV1020`. DO NOT USE REAL AADHAAR DATA in presentations.*
 
 ## 🔐 Cryptographic OTP Sequence (2FA)
 A simulated two-factor authentication layer handles unauthorized physical access to the ID numbers.
