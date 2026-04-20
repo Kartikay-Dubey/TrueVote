@@ -16,16 +16,16 @@
 
 ## 4. Existing System Issues
 - **Unverifiable Data:** Users click "submit" but receive zero cryptographic assurance that their specific choice safely entered the final tally.
-- **Static Interfaces:** Traditional platforms fail to use modern dynamic UI techniques, making the experience feel cheap and unengaging.
+- **Static Interfaces:** Traditional platforms deliver rigid, lifeless experiences with zero micro-animations or real-time visual feedback, making the process feel cheap and untrustworthy.
 - **Administrative Blind Spots:** Administrators lack real-time, visual anomaly detection tools to spot coordinated fraud as it happens.
 
 ## 5. Our Solution
-- We built a next-generation voting platform merging a deeply intuitive, dynamically adapting user interface with robust cryptographic security. 
+- We built a next-generation voting platform merging a deeply intuitive, high-performance interactive interface with robust cryptographic security.
 - The system issues an immutable "Hash Receipt" the moment a vote is cast, ensuring absolute voter peace of mind.
 - We utilize ultra-premium glassmorphic aesthetics and fluid animations to elevate the voting process from a chore into a highly engaging, modern experience.
 
 ## 6. Key Features
-- **Dynamic UI Adaptation:** The interface reacts organically to user interactions using smooth micro-animations and layout shifts.
+- **Premium Interactive UI:** The interface reacts organically to user interactions using smooth micro-animations, 3D card tilt physics, and cinematic transitions.
 - **Instant Cryptographic Receipts:** Generates a secure SHA-256 hash immediately upon voting, serving as an untamperable digital receipt.
 - **Live Anomaly Dashboard:** A real-time administrative view that monitors incoming data streams and highlights suspicious activity automatically.
 - **Frictionless Verification:** A dedicated verification portal where users can drop in their hash receipt and prove their vote remains unaltered.

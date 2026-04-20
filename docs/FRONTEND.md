@@ -1,26 +1,45 @@
-# Frontend Documentation
+# Frontend Documentation — TrueVote
 
 ## 🎨 Overview
-The frontend of the Dynamic UI Personalization Engine handles the stunning, fluid visual interface, while silently tracking user behaviors. It acts as both the "sensor" reading user inputs and the "actuator" physically modifying the interface in real-time.
+The TrueVote frontend is a Next.js 16 (App Router) application delivering a premium, security-focused voting interface. It is built to feel trustworthy, snappy, and visually striking — combining glassmorphic dark-mode aesthetics with real-time cryptographic feedback to give voters absolute confidence in the process.
 
 ## 📐 Architecture & Principles
-- **Component Modularity:** Layouts aren't rigid. Pages consist of "Zones" that render dynamic configurations.
-- **Micro-Animations:** Fluid, 60fps transitions using Framer Motion (or native CSS) prevent layout shifts from feeling jarring or broken. 
-- **Non-Blocking Tracking:** User behavioral tracking utilizes Web Workers and Intersection Observers to keep the main UI thread silky smooth.
+- **App Router Structure:** All pages live under `src/app/` using the Next.js file-based routing system (e.g., `/vote`, `/verify`, `/admin`, `/success`).
+- **Component Modularity:** UI is composed of three categories of components: `aesthetic/` (background effects), `interactive/` (3D cards, modals), and `secure/` (hash terminal, receipt viewer).
+- **Micro-Animations:** Fluid 60fps transitions using Framer Motion prevent layout shifts from feeling jarring. Every state change has a physical presence.
+- **Type Safety:** The entire frontend is written in TypeScript with strict typing.
 
-## 📡 Tracking Logic
-The frontend tracking is strictly privacy-centric. We assign an ephemeral `client_session` ID. We do NOT collect forms, personal info, or keystrokes.
+## 🗂️ Key Pages
 
-**Metrics Tracked:**
-1. **Dwell Time:** Viewing specific sections vs bouncing quickly.
-2. **Click & Tap Trajectories:** Determining areas of high vs low engagement.
-3. **Scroll Depth & Velocity:** Understanding implicit user interest levels.
+| Route | Purpose |
+|---|---|
+| `/` | Landing page — hero section, how-it-works, feature highlights |
+| `/login` | Voter authentication via JWT |
+| `/vote` | Candidate selection with 3D-tilt cards and confirmation modal |
+| `/success` | Post-vote receipt page — Hash Terminal decryption animation |
+| `/verify` | Public ledger — paste a hash receipt to prove your vote |
+| `/admin-login` | Restricted admin authentication |
+| `/admin` | Live election dashboard with Recharts (Donut + Area charts) |
 
-**Event Batching:**
-To ensure high performance, events are collected in a local buffer array and dispatched via `navigator.sendBeacon()` or lightweight REST/WebSocket channels every few seconds or upon page unmount.
+## 🔌 Real-Time Integration
+The frontend connects to the backend via **Socket.io** (WebSockets) on the Admin Dashboard page. Every time a new vote is cast, the server emits a `new_vote_cast` event that instantly updates:
+1. The live vote counter.
+2. The Donut chart party distribution (Recharts `PieChart`).
+3. The time-series Area chart tracking vote velocity over time.
 
-## 🔄 Dynamic Rehydration (UI Sync)
-When the Personalization Engine backend sends a new UI configuration state:
-1. React/Next.js/Native state updates organically.
-2. An elegant animation smoothens the transition (e.g., swapping a generic hero image for a targeted promotion).
-3. Fallback standard UIs instantly load if the dynamic state is delayed or unreachable.
+## 🔒 Auth Flow
+- Voters receive a **JWT** stored in `localStorage` after login.
+- The `/vote` page reads this token to gate access and identify the voter server-side.
+- The `/admin` page reads an `admin_token` and validates it against `/api/v1/auth/admin-verify` before rendering any data.
+- All tokens are single-use for voting — once a vote is cast, the backend flags the voter ID to prevent double-voting.
+
+## 🧩 Key Components
+
+### `AsymmetricCard` (`interactive/`)
+A reusable card component with real-time 3D mouse-tilt physics using Framer Motion springs. Used on the vote page for all 5 candidate cards and on the admin dashboard for KPI stats.
+
+### `HashTerminal` (`secure/`)
+A cyberpunk-style terminal component that runs a "decryption" animation revealing the SHA-256 receipt character by character. Includes a one-click clipboard copy button that appears only after the animation completes.
+
+### `BackgroundEffect` (`aesthetic/`)
+A canvas-based animated background rendered globally via the root layout. Provides a subtle, performance-friendly animated particle/mesh effect without blocking the main UI thread.

@@ -23,7 +23,7 @@ app.use('/api/v1/ingest', ingestRoutes);
 app.use('/api/v1', secureRoutes);
 
 app.get('/api/v1/health', (req, res) => {
-  res.json({ status: 'Dynamic UI Backend is running', timestamp: new Date() });
+  res.json({ status: 'TrueVote Secure Backend is running', timestamp: new Date() });
 });
 
 io.on('connection', (socket) => {

@@ -1,104 +1,40 @@
-# TrueVote – Secure Voting System
+# Dynamic UI Personalization Engine
 
-## 🚀 Live Demo
-*(Insert Live Demo Link Here)*
-**👉 Live Link:** [Add deployed link here]
+<div align="center">
+  <h3>Turning Vision Into Reality</h3>
+  <p>A smart, real-time UI that adapts to user behavior dynamically, enhancing engagement while ensuring absolute privacy.</p>
+</div>
 
----
+## 📖 Overview
 
-## 📸 Screenshots
+The **Dynamic UI Personalization Engine** is an intelligent web application interface that learns and evolves based on real-time user interactions—such as clicks, time spent across sections, and navigation patterns. The platform seamlessly syncs frontend behavioral tracking with a robust backend logic system to instantly rearrange UI components, highlight key features, and recommend tailored content.
 
-*(Replace bracketed text with absolute image URLs once hosted)*
-- **Landing Page**: [Insert landing-page.png]
-- **Voting Portal**: [Insert voting-page.png]
-- **Verification Receipt**: [Insert receipt.png]
-- **Live Admin Dashboard**: [Insert admin-dashboard.png]
+Our core focus is: **Performance, Modularity, and Privacy.** 
 
----
+## 🎯 Hackathon Problem Statement
 
-## 🧠 Project Overview
-**TrueVote** is a production-grade, highly secure civic technology platform designed to eradicate election fraud and restore voter trust. It provides an end-to-end verifiable ecosystem where citizens can cast their ballots anonymously, while simultaneously generating mathematical proof that their specific vote was counted in the final tally.
+We are addressing the challenge of creating a zero-friction, highly engaging user experience. A static UI fails to convert or engage optimally. By dynamically adjusting the interface, we create a specialized user journey tailored implicitly per user.
 
----
+### Key Challenges We Are Solving
+- **Real-time UX Adjustment:** Capturing seamless frontend interaction data without degrading visual performance.
+- **State Synchronization:** Syncing frontend tracking with backend personalization logic accurately.
+- **Performance:** Maintaining 60fps animations and avoiding rendering jank while components reorder or adjust state.
+- **Layout Consistency:** Utilizing smart constraints so the UI remains intuitive, never confusing, during dynamic shifts.
+- **Privacy-First Web Tracking:** Fully anonymized data processing—no sensitive user data is collected to drive this engine.
 
-## ❗ Problem Statement
-Trust in democratic institutions is failing. Traditional voting systems force citizens to rely on blind trust—dropping a piece of paper into a box or pressing a button on a machine, with zero cryptographic proof that their vote was honestly tallied or protected from post-election ballot stuffing.
+## 🏗️ Architecture & Documentation 
 
----
+Our documentation is strictly separated to maintain clarity and enforce modular boundaries. Please refer to the specific modules below:
 
-## 💡 Solution
-TrueVote solves this by bringing "Bank-Grade Encryption" to the ballot box. We mathematically isolate voter identities to prevent duplicate voting (using JWT gating). Once a choice is made, our backend engine converts the ballot into an indestructible SHA-256 cryptographic receipt. The voter walks away with proof, making the election 100% transparent and completely anonymous simultaneously.
+- 🎨 **[Frontend Documentation](docs/FRONTEND.md):** UI components, animations, and behavioral tracking logic.
+- ⚙️ **[Backend Documentation](docs/BACKEND.md):** API design, overall architecture, and data flow.
+- 🧠 **[Personalization Engine](docs/PERSONALIZATION_ENGINE.md):** Core rules, real-time logic constraints, and future ML expansion scope.
+- 🗄️ **[Database Architecture](docs/DATABASE.md):** Data schema, collections/tables, and tracking relationships.
 
----
+## 🚀 Technical Goals
 
-## ✨ Features
-- **One Person, One Vote**: Strict Identity validation blocks double-voting at the network boundary.
-- **Multi-Party UI Validation**: High-friction confirmation modals prevent accidental votes.
-- **Real-Time Results**: The Live Admin Dashboard uses WebSockets and Recharts to map incoming votes in milliseconds.
-- **Vote Verification**: Citizens can search the public ledger using their secure hash to verify their vote independently.
-- **Secure Storage**: Backend engine natively repels DDoS attacks and prevents database tampering.
+1. **Lightweight & Fast:** The JS payload for tracking and rendering must be minimal. No bloated libraries.
+2. **Visually Impressive:** A sleek, glassmorphic, and highly animated aesthetic that feels premium (startup-grade).
+3. **Modular Events:** Any component can easily be wrapped in a "tracked" higher-order system.
 
----
-
-## ⚙️ Tech Stack
-- **Frontend Core**: Next.js 15 (App Router), React, TypeScript
-- **Styling & UI**: Tailwind CSS, Framer Motion (3D Physics)
-- **Data Visualization**: Recharts
-- **Backend Architecture**: Node.js, Express.js
-- **Authentication**: JSON Web Tokens (JWT)
-- **Real-Time Telemetry**: Socket.io / WebSockets
-
----
-
-## 🔄 How It Works
-1. **Sign In**: User is authenticated mathematically via the system registry at `/login`.
-2. **Cast Ballot**: User evaluates candidates and authorizes their choice through a high-friction confirmation modal.
-3. **Receipt Generation**: The system strips their identity and encrypts the vote into a 64-character public receipt (SHA-256).
-4. **Independent Verification**: The user enters their code into the `/verify` portal to cryptographically prove their vote exists in the final secure tally.
-
----
-
-## 🔐 Security (Simplified)
-Imagine putting your favorite fruit into a blender. You get a smoothie, but you can never "un-blend" it back into the raw fruit. 
-When you vote, TrueVote blends your choice into a random-looking 64-character secure code. This code gets locked into the public tally. No one can ever un-blend that code to see who you are. If a malicious hacker tries to change your vote even slightly, the math "tastes wrong" and the system instantly rejects it.
-
----
-
-## 📊 Future Scope
-- **Biometric Integration**: Extending the login portal to support physical FaceID / Thumbprint verification.
-- **Zero-Knowledge Proofs (ZKP)**: Allowing even greater anonymity so not even the central servers can link a receipt down to a physical location.
-- **Mobile Application**: Native iOS/Android wrapping for remote accessibility.
-
----
-
-## 👥 Team
-- **Kartikay Dubey** – Lead Engineer / Product Architect
-- *(Add other team members here)*
-
----
-
-## 🛠️ Installation & Setup
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/Kartikay-Dubey/TrueVote.git
-cd TrueVote
-```
-
-### 2. Frontend Setup
-```bash
-cd frontend
-npm install
-npm run dev
-# The frontend will run on http://localhost:3000
-```
-
-### 3. Backend Setup
-```bash
-cd ../backend
-npm install
-node server.js
-# The backend will run on port 5000
-```
-
-*Note: The backend features auto-shifting port logic. If port 5000 is occupied, it will automatically shift to 5001.*
+*(Note: The exact technology stack will be updated organically in these docs as implementation begins.)*
