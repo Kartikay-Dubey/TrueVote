@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #050505;
+  --color-foreground: #ffffff;
+  --color-primary: #06b6d4; /* Neon Cyan */
+  --color-secondary: #a855f7; /* Electric Purple */
+}
+
+@layer base {
+  :root {
+    --background: #050505;
+    --foreground: #ffffff;
+  }
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    overflow-x: hidden;
+  }
+}
+
+/* Glassmorphism Utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+
+.glass-panel {
+  background: rgba(10, 10, 12, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+}
+
+.glow-purple {
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+}
+
+/* Background animated gradient */
+.bg-gradient-orbs {
+  background: radial-gradient(circle at 15% 50%, rgba(6, 182, 212, 0.1), transparent 30%),
+              radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.08), transparent 25%),
+              #050505;
+  background-attachment: fixed;
+}
