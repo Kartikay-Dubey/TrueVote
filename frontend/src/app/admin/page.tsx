@@ -217,23 +217,27 @@ export default function AdminDashboard() {
            
            <div className="space-y-4 font-mono text-sm max-h-[250px] overflow-hidden relative">
              <AnimatePresence>
-               {anomalies.map((anom) => (
-                   <motion.div 
-                     layout
-                     key={anom.id}
-                     initial={{ opacity: 0, x: -50, scale: 0.95 }}
-                     animate={{ opacity: 1, x: 0, scale: 1 }}
-                     exit={{ opacity: 0 }}
-                     transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                     className="p-4 bg-red-900/10 border-l-4 border-red-500 text-red-300 flex flex-col gap-2"
-                   >
-                     <div className="flex justify-between items-start w-full">
-                        <span className="text-red-400 font-bold uppercase tracking-widest text-xs">Intrusion Attempt Blocked</span>
-                        <span className="text-[10px] px-2 py-1 bg-red-500 text-white font-bold uppercase tracking-widest">Defended</span>
-                     </div>
-                     <span className="text-xs text-gray-400 mt-1">{new Date(anom.id).toLocaleTimeString()} - {anom.msg}</span>
-                   </motion.div>
-               ))}
+                {anomalies.map((anom) => (
+                    <motion.div 
+                      layout
+                      key={anom.id}
+                      initial={{ opacity: 0, x: -50, scale: 0.95 }}
+                      animate={{ opacity: 1, x: 0, scale: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                      className={`p-4 border-l-4 flex flex-col gap-2 ${anom.type === 'alert' ? 'bg-red-900/10 border-red-500 text-red-300' : 'bg-emerald-900/10 border-emerald-500 text-emerald-300'}`}
+                    >
+                      <div className="flex justify-between items-start w-full">
+                         <span className={`font-bold uppercase tracking-widest text-xs ${anom.type === 'alert' ? 'text-red-400' : 'text-emerald-400'}`}>
+                           {anom.type === 'alert' ? 'Intrusion Attempt Blocked' : 'System Event Verified'}
+                         </span>
+                         <span className={`text-[10px] px-2 py-1 font-bold uppercase tracking-widest text-white ${anom.type === 'alert' ? 'bg-red-500' : 'bg-emerald-500'}`}>
+                           {anom.type === 'alert' ? 'Defended' : 'Secured'}
+                         </span>
+                      </div>
+                      <span className="text-xs text-gray-400 mt-1">{new Date(anom.id).toLocaleTimeString()} - {anom.msg}</span>
+                    </motion.div>
+                ))}
              </AnimatePresence>
              {anomalies.length === 0 && <div className="text-gray-600 text-center pt-10 uppercase tracking-[0.2em] text-xs">Sensors active... awaiting threats.</div>}
            </div>
