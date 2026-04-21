@@ -38,7 +38,7 @@ const INDI_CANDIDATES = [
     id: "Arvind_Kejriwal", 
     name: "Arvind Kejriwal", 
     party: "Aam Aadmi Party (AAP)", 
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Aam_Aadmi_Party_logo_%28English%29.svg/1200px-Aam_Aadmi_Party_logo_%28English%29.svg.png",
+    image: "https://i.pinimg.com/564x/df/b3/41/dfb34171fcf315c4506d6fc8d96f1d41.jpg",
     symbol: "🧹",
     theme: "from-cyan-400 to-cyan-500",
     border: "border-cyan-400",
