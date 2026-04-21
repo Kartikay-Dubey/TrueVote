@@ -21,15 +21,26 @@ router.post('/login/init', (req, res) => {
     return res.status(400).json({ error: 'Voter ID is required.' });
   }
 
-  // Check against fake dataset
-  const userRecord = global.fakeUsers[voterId];
+  const inputId = voterId;
+  let resolvedUserId = null;
+  let userRecord = null;
+  
+  if (global.fakeUsers[inputId]) {
+    resolvedUserId = inputId;
+    userRecord = global.fakeUsers[inputId];
+  } else {
+    // Identity resolution via simulated Aadhaar
+    resolvedUserId = Object.keys(global.fakeUsers).find(k => global.fakeUsers[k].aadhaarNumber === inputId);
+    if (resolvedUserId) userRecord = global.fakeUsers[resolvedUserId];
+  }
+
   if (!userRecord) {
     return res.status(404).json({ error: 'Invalid ID: Demographic record not found in national registry.' });
   }
 
   // Generate 6-digit simulated OTP - Hardcoded for prototype demo
   const generatedOtp = "507410";
-  global.otpCache[voterId] = generatedOtp;
+  global.otpCache[inputId] = generatedOtp; // Cache against exact string they typed
 
   // Log in terminal for the hackathon demo exactly as requested
   console.log(`\n[SMS GATEWAY SIMULATION]`);
@@ -58,8 +69,20 @@ router.post('/login/verify', (req, res) => {
   // Clear OTP
   delete global.otpCache[voterId];
 
-  const userId = voterId;
-  const userRecord = global.fakeUsers[userId];
+  const inputId = voterId;
+  let resolvedUserId = null;
+  let userRecord = null;
+  
+  if (global.fakeUsers[inputId]) {
+    resolvedUserId = inputId;
+    userRecord = global.fakeUsers[inputId];
+  } else {
+    // Identity resolution via simulated Aadhaar
+    resolvedUserId = Object.keys(global.fakeUsers).find(k => global.fakeUsers[k].aadhaarNumber === inputId);
+    if (resolvedUserId) userRecord = global.fakeUsers[resolvedUserId];
+  }
+  
+  const userId = resolvedUserId;
   
   const token = jwt.sign({ userId, role: 'voter', name: userRecord.name }, JWT_SECRET, { expiresIn: '24h' });
   const hasVoted = userRecord.hasVoted;
@@ -106,12 +129,24 @@ router.post('/assisted-login', (req, res) => {
       return res.status(400).json({ error: 'Voter ID is required.' });
     }
 
-    const userRecord = global.fakeUsers[voterId];
+    const inputId = voterId;
+    let resolvedUserId = null;
+    let userRecord = null;
+    
+    if (global.fakeUsers[inputId]) {
+      resolvedUserId = inputId;
+      userRecord = global.fakeUsers[inputId];
+    } else {
+      // Identity resolution via simulated Aadhaar
+      resolvedUserId = Object.keys(global.fakeUsers).find(k => global.fakeUsers[k].aadhaarNumber === inputId);
+      if (resolvedUserId) userRecord = global.fakeUsers[resolvedUserId];
+    }
+
     if (!userRecord) {
       return res.status(404).json({ error: 'Invalid ID: Record not found.' });
     }
   
-    const userId = voterId;
+    const userId = resolvedUserId;
     const voterToken = jwt.sign({ userId, role: 'voter', assistedBy: user.userId || 'admin', name: userRecord.name }, JWT_SECRET, { expiresIn: '1h' });
     const hasVoted = userRecord.hasVoted;
   

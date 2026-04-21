@@ -2,8 +2,11 @@
 
 Our system requires exactly ZERO technical knowledge from the end-user. 
 
-### Phase 1: Cryptographic Authentication
-Citizens navigate to `/login` to authorize their demographic identity (e.g. `TV1001` linked to simulated Aadhaar datasets mapped in our unified Node server). 
+### Phase 1: Identity Verification
+When a user launches the app, they must log in using their **Voter ID** or **Simulated Aadhaar Number**. The system hits the demographic API registry (`/api/v1/auth/login/init`). If identified, a simulated SMS gateway immediately generates and transmits a secure 6-digit One Time Password (OTP) to the terminal.
+
+> **Note on Simulated Aadhaar:** For hackathon demonstration purposes, realistic 12-digit Aadhaar values have been seeded for all 20 profile entities to show seamless compatibility with Indian national identity schema parameters without using real privacy data.
+
 Because the application is now in Live Production, the **Frontend (Vercel)** sends secure cross-domain HTTPS requests to the **Backend Engine (Render)** at `https://truevote-backend-fcmt.onrender.com`.
 
 To prevent offline spoofing, the system dynamically generates and outputs a **6-Digit OTP** directly into the Render backend server logs (to emulate an SMS gateway). Upon verifying both the unique ID and the terminal-extracted OTP pin against the network constraints, the backend issues an expiring JWT session. If the identity has *already* recorded a transaction, the server instantly terminates the session with a `403 Forbidden` response.
