@@ -86,7 +86,7 @@ export function useLiveSimulation() {
         // Red Security Event
         setPulse(true);
         newLog = { 
-          msg: \`DDoS Mitigation: Connection blocked from IP 104.28.\${Math.floor(Math.random()*255)}.\${Math.floor(Math.random()*255)}\`, 
+          msg: `DDoS Mitigation: Connection blocked from IP 104.28.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`, 
           id: Date.now(),
           type: 'alert' as const
         };
@@ -96,7 +96,7 @@ export function useLiveSimulation() {
         const location = LOCATIONS[Math.floor(Math.random() * LOCATIONS.length)];
         const action = SUCCESS_LOGS[Math.floor(Math.random() * SUCCESS_LOGS.length)];
         newLog = {
-          msg: rand > 0.6 ? \`New secure vote received from \${location}\` : action,
+          msg: rand > 0.6 ? `New secure vote received from ${location}` : action,
           id: Date.now(),
           type: 'success' as const
         };
