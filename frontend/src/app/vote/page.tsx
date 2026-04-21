@@ -14,6 +14,7 @@ const INDI_CANDIDATES = [
     id: "Narendra_Modi", 
     name: "Narendra Modi", 
     party: "Bharatiya Janata Party (BJP)", 
+    image: "https://upload.wikimedia.org/wikipedia/commons/1/1e/Bharatiya_Janata_Party_logo.svg",
     symbol: "🪷",
     theme: "from-orange-500 to-orange-600",
     border: "border-orange-500",
@@ -25,6 +26,7 @@ const INDI_CANDIDATES = [
     id: "Rahul_Gandhi", 
     name: "Rahul Gandhi", 
     party: "Indian National Congress (INC)", 
+    image: "https://upload.wikimedia.org/wikipedia/commons/6/6c/Indian_National_Congress_hand_logo.svg",
     symbol: "✋",
     theme: "from-sky-500 to-sky-600",
     border: "border-sky-500",
@@ -36,6 +38,7 @@ const INDI_CANDIDATES = [
     id: "Arvind_Kejriwal", 
     name: "Arvind Kejriwal", 
     party: "Aam Aadmi Party (AAP)", 
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Aam_Aadmi_Party_logo_%28English%29.svg/1200px-Aam_Aadmi_Party_logo_%28English%29.svg.png",
     symbol: "🧹",
     theme: "from-cyan-400 to-cyan-500",
     border: "border-cyan-400",
@@ -47,6 +50,7 @@ const INDI_CANDIDATES = [
     id: "Mamata_Banerjee", 
     name: "Mamata Banerjee", 
     party: "All India Trinamool Congress (TMC)", 
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/All_India_Trinamool_Congress_flag.svg/1024px-All_India_Trinamool_Congress_flag.svg.png",
     symbol: "🌸",
     theme: "from-emerald-500 to-emerald-600",
     border: "border-emerald-500",
@@ -55,15 +59,40 @@ const INDI_CANDIDATES = [
     agenda: ["Regional Autonomy", "Women Empowerment", "Social Justice"]
   },
   { 
-    id: "D_Raja", 
-    name: "D. Raja", 
-    party: "Communist Party of India (CPI)", 
-    symbol: "🌾",
-    theme: "from-red-600 to-red-700",
+    id: "Uddhav_Thackeray", 
+    name: "Uddhav Thackeray", 
+    party: "Shiv Sena (UBT)", 
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Shiv_Sena_UBT_logo.svg/800px-Shiv_Sena_UBT_logo.svg.png",
+    symbol: "🏹",
+    theme: "from-amber-600 to-amber-700",
+    border: "border-amber-500",
+    text: "text-amber-500",
+    shadow: "shadow-[0_0_20px_rgba(245,158,11,0.4)]",
+    agenda: ["Regional Pride", "Farmers' Voice", "Industrial Growth"]
+  },
+  { 
+    id: "Akhilesh_Yadav", 
+    name: "Akhilesh Yadav", 
+    party: "Samajwadi Party (SP)", 
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Samajwadi_Party_Flag.svg/1024px-Samajwadi_Party_Flag.svg.png",
+    symbol: "🚲",
+    theme: "from-red-500 to-red-600",
     border: "border-red-500",
     text: "text-red-500",
     shadow: "shadow-[0_0_20px_rgba(239,68,68,0.4)]",
-    agenda: ["Labor Rights", "Wealth Distribution", "Public Sector Protect"]
+    agenda: ["Social Equality", "Minority Rights", "Rural Development"]
+  },
+  { 
+    id: "Mayawati", 
+    name: "Mayawati", 
+    party: "Bahujan Samaj Party (BSP)", 
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Elephant_Bahujan_Samaj_Party.svg/512px-Elephant_Bahujan_Samaj_Party.svg.png",
+    symbol: "🐘",
+    theme: "from-blue-600 to-blue-800",
+    border: "border-blue-600",
+    text: "text-blue-500",
+    shadow: "shadow-[0_0_20px_rgba(37,99,235,0.4)]",
+    agenda: ["Dalit Emancipation", "Constitutional Law", "Poverty Eradication"]
   }
 ];
 
@@ -161,9 +190,9 @@ export default function VotePage() {
                     <div className="relative w-full h-full p-6 bg-[#050505]" style={{ clipPath: "polygon(24px 0, 100% 0, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0 100%, 0 24px)" }}>
                        
                        <div className="flex gap-6 items-start">
-                          <div className={`shrink-0 w-20 h-20 flex items-center justify-center text-4xl bg-black border ${isActive ? `${c.border} ${c.shadow}` : 'border-white/10'} transition-all`} style={{ clipPath: 'polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)' }}>
-                             {c.symbol}
-                          </div>
+                          <div className={`shrink-0 w-20 h-20 flex items-center justify-center text-4xl bg-black border overflow-hidden relative ${isActive ? `${c.border} ${c.shadow}` : 'border-white/10'} transition-all`} style={{ clipPath: 'polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)' }}>
+  {c.image ? <img src={c.image} alt={c.party} className="w-full h-full object-contain p-2" /> : c.symbol}
+</div>
                           
                           <div className="flex-1">
                              <h3 className="text-2xl font-black text-white mb-1 tracking-tight">{c.name}</h3>
@@ -226,7 +255,9 @@ export default function VotePage() {
                     </p>
 
                     <div className="flex items-center gap-6 mb-10 bg-white/5 p-4" style={{ clipPath: 'polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)'}}>
-                       <div className="text-5xl">{activeCandidateData.symbol}</div>
+                       <div className="w-24 h-24 shrink-0 bg-white/10 flex items-center justify-center p-2 rounded relative">
+  {activeCandidateData.image ? <img src={activeCandidateData.image} className="w-full h-full object-contain" alt="" /> : <span className="text-5xl">{activeCandidateData.symbol}</span>}
+</div>
                        <div>
                          <p className="text-gray-400 text-xs font-mono uppercase tracking-widest mb-1">Your Selection</p>
                          <h3 className={`text-2xl font-black uppercase ${activeCandidateData.text}`}>{activeCandidateData.name}</h3>

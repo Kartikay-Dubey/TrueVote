@@ -27,8 +27,8 @@ router.post('/login/init', (req, res) => {
     return res.status(404).json({ error: 'Invalid ID: Demographic record not found in national registry.' });
   }
 
-  // Generate 6-digit simulated OTP
-  const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+  // Generate 6-digit simulated OTP - Hardcoded for prototype demo
+  const generatedOtp = "507410";
   global.otpCache[voterId] = generatedOtp;
 
   // Log in terminal for the hackathon demo exactly as requested

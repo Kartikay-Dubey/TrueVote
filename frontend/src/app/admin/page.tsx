@@ -18,7 +18,10 @@ const PARTY_COLORS: Record<string, string> = {
   "Rahul_Gandhi": "#0ea5e9", // sky
   "Arvind_Kejriwal": "#22d3ee", // cyan
   "Mamata_Banerjee": "#10b981", // emerald
-  "D_Raja": "#ef4444" // red
+  "Uddhav_Thackeray": "#f59e0b", // amber
+  "Akhilesh_Yadav": "#ef4444", // red
+  "Mayawati": "#2563eb", // blue
+  "D_Raja": "#dc2626" // darker red
 };
 
 export default function AdminDashboard() {

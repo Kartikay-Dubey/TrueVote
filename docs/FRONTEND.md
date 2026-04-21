@@ -22,11 +22,14 @@ The TrueVote frontend is a Next.js 16 (App Router) application delivering a prem
 | `/admin` | Live election dashboard with anomaly detection |
 | `/assisted-vote` | Rural Access Terminal for administratively overriding unequipped voter logins |
 
-## 🔌 Real-Time Integration
+## 🔌 Real-Time Integration & Production Configuration
 The frontend connects to the backend via **Socket.io** (WebSockets) on the Admin Dashboard page. Every time a new vote is cast, the server emits a `new_vote_cast` event that instantly updates:
-1. The live vote counter.
-2. The Donut chart party distribution (Recharts `PieChart`).
-3. The time-series Area chart tracking vote velocity over time.
+1. The 5-party distribution object
+2. The UI vote tally charts
+3. The real-time activity log
+
+**Live Production Deployments:**
+Because the frontend is deployed dynamically on Vercel while the true engine runs on Render, all components now dynamically bridge the networking layers using the `NEXT_PUBLIC_API_URL` environment variable. By default it falls back to `localhost:5000` for offline development, but strictly routes to `https://truevote-backend-fcmt.onrender.com` in production!
 
 ## 🔒 Auth Flow
 - Voters receive a **JWT** stored in `localStorage` after login.
