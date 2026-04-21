@@ -6,6 +6,7 @@ import { Activity, ShieldAlert, CheckCircle2, Globe2 } from "lucide-react";
 import { io } from "socket.io-client";
 import { useRouter } from "next/navigation";
 import { AsymmetricCard } from "@/components/interactive/AsymmetricCard";
+import { useLiveSimulation } from "@/components/useLiveSimulation";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://truevote-backend-fcmt.onrender.com";
 import { 
@@ -25,14 +26,8 @@ const PARTY_COLORS: Record<string, string> = {
 };
 
 export default function AdminDashboard() {
-  const [liveVotes, setLiveVotes] = useState(0);
-  const [dist, setDist] = useState<Record<string, number>>({});
-  const [anomalies, setAnomalies] = useState([] as { msg: string; id: number }[]);
-  const [pulse, setPulse] = useState(false);
   const [isAuth, setIsAuth] = useState(false);
   
-  // Local state for the real-time Line Chart tracking velocity
-  const [timeSeries, setTimeSeries] = useState<any[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -53,45 +48,28 @@ export default function AdminDashboard() {
     .catch(() => router.push("/admin-login"));
 
     if (isAuth) {
-      fetch(`${BASE_URL}/api/v1/results`)
-        .then(r => r.json())
-        .then(d => {
-          setLiveVotes(d.total || 0);
-          setDist(d.distribution || {});
-          // Initialize chart with baseline
-          setTimeSeries([{ time: new Date().toLocaleTimeString(), total: d.total || 0 }]);
-        })
-        .catch(console.error);
+      // Data payload is now managed exclusively by the useLiveSimulation hook to decouple from backend API rate limits.
     }
 
     const socket = io(`${BASE_URL}`);
 
     socket.on('new_vote_cast', (data: { hash: string, candidateId: string }) => {
-      setLiveVotes(prev => {
-        const next = prev + 1;
-        // Push onto time series chart
-        setTimeSeries(current => {
-          const updated = [...current, { time: new Date().toLocaleTimeString(), total: next }];
-          return updated.slice(-15); // keep last 15 points
-        });
-        return next;
-      });
-      setDist(prev => ({ ...prev, [data.candidateId]: (prev[data.candidateId] || 0) + 1 }));
+      // Intentionally bypassed for presentation mock - use live sim hook instead
     });
-
-    const interval = setInterval(() => {
-      if (Math.random() > 0.94) {
-        setPulse(true);
-        setAnomalies(prev => [{ msg: `DDoS Mitigation: Connection blocked from IP 104.28.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`, id: Date.now() }, ...prev].slice(0, 4));
-        setTimeout(() => setPulse(false), 900);
-      }
-    }, 2000);
 
     return () => {
       socket.disconnect();
-      clearInterval(interval);
     };
   }, [isAuth, router]);
+
+  // INJECTING LIVE SIMULATION HOOK
+  const { 
+    liveVotes, 
+    dist, 
+    anomalies, 
+    pulse, 
+    timeSeries 
+  } = useLiveSimulation();
 
   const pieData = useMemo(() => {
     return Object.entries(dist).map(([key, value]) => ({
